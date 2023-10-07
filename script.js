@@ -3,12 +3,15 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
+// screen.orientation.lock("landscape");
+
 class Player {
   constructor() {
     this.velocity = {
       x: 0,
     };
     this.rotation = 0;
+    this.opacity = 1;
     const image = new Image();
     image.src = "./img/pngwing.com (4).png";
 
@@ -25,7 +28,7 @@ class Player {
   }
   draw() {
     ctx.save();
-
+    ctx.globalAlpha = this.opacity;
     ctx.translate(
       player.position.x + player.width / 2,
       player.position.y + player.height / 2
@@ -193,25 +196,25 @@ class Particle {
     this.velocity = velocity;
     this.radius = radius;
     this.color = color;
-    this.opacity = 1
-    this.fades = fades
+    this.opacity = 1;
+    this.fades = fades;
   }
   draw() {
-    ctx.save()
-    ctx.globalAlpha = this.opacity
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
     ctx.beginPath();
     ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
     ctx.closePath();
-    ctx.restore()
+    ctx.restore();
   }
 
   update() {
     this.draw();
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
-    if(this.fades) this.opacity -= 0.01
+    if (this.fades) this.opacity -= 0.01;
   }
 }
 
@@ -231,7 +234,10 @@ const grids = [];
 let invaderProjectiles = [];
 const particles = [];
 let frames = 0;
-
+let game = {
+  over: false,
+  active: true,
+};
 
 for (i = 0; i < 100; i++) {
   particles.push(
@@ -245,56 +251,53 @@ for (i = 0; i < 100; i++) {
         y: 0.4,
       },
       Math.random() * 2,
-      'white'
+      "white"
     )
   );
 }
 
-
-
 createParticles = (object, color, fades) => {
-        for (i = 0; i < 15; i++) {
-          particles.push(
-            new Particle(
-              {
-                x: object.position.x + object.width / 2,
-                y: object.position.y + object.height / 2,
-              },
-              {
-                x: (Math.random() - 0.5) * 2,
-                y: (Math.random() - 0.5) * 2,
-              },
-              Math.random() * 2,
-              color,
-              fades
-            )
-          );
-        }
-}
+  for (i = 0; i < 15; i++) {
+    particles.push(
+      new Particle(
+        {
+          x: object.position.x + object.width / 2,
+          y: object.position.y + object.height / 2,
+        },
+        {
+          x: (Math.random() - 0.5) * 2,
+          y: (Math.random() - 0.5) * 2,
+        },
+        Math.random() * 2,
+        color,
+        fades
+      )
+    );
+  }
+};
 animate = () => {
+  if (!game.active) return;
   requestAnimationFrame(animate);
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, innerWidth, innerHeight);
   player.update();
 
-
-
   //remove particles from /screen
   particles.forEach((particle, index) => {
-    if(particle.position.y - particle.radius >= canvas.height){
-        particle.position.x = Math.random() * canvas.width
-        particle.position.y = -particle.radius;
+    if (particle.position.y - particle.radius >= canvas.height) {
+      particle.position.x = Math.random() * canvas.width;
+      particle.position.y = -particle.radius;
     }
-    if(particle.opacity <= 0){
-        setTimeout(()=> {
-            particles.splice(index, 1)
-        }, 0)
-    }else{
-        particle.update();
+    if (particle.opacity <= 0) {
+      setTimeout(() => {
+        particles.splice(index, 1);
+      }, 0);
+    } else {
+      particle.update();
     }
   });
 
-//garbage collection for offscreen invader projectiles
+  //garbage collection for offscreen invader projectiles
   invaderProjectiles.forEach((invaderProjectile, index) => {
     if (
       invaderProjectile.position.y + invaderProjectile.height >
@@ -307,7 +310,6 @@ animate = () => {
       invaderProjectile.update();
     }
 
-
     //projectile hits us
     if (
       invaderProjectile.position.y + invaderProjectile.height >=
@@ -316,11 +318,16 @@ animate = () => {
         player.position.x &&
       invaderProjectile.position.x <= player.position.x + player.width
     ) {
-        setTimeout(() => {
-            invaderProjectiles.splice(index, 1);
-        },
-     0);
-        createParticles(player,'white', true)
+      setTimeout(() => {
+        invaderProjectiles.splice(index, 1);
+        player.opacity = 0;
+        game.over = true;
+      }, 0);
+
+      setTimeout(() => {
+        game.active = false;
+      }, 5000);
+      createParticles(player, "white", true);
     }
   });
 
@@ -358,23 +365,23 @@ animate = () => {
             invader.position.x + invader.width &&
           projectile.position.y + projectile.radius >= invader.position.y
         ) {
-            setTimeout(() => {
-                //check for invader
-                const invaderFound = grid.invaders.find((currInvader) => {
-                    return currInvader == invader;
-                });
-                //check for projectile
-            const proFound = projectiles.find((currPro) => {
-                return currPro == projectile;
+          setTimeout(() => {
+            //check for invader
+            const invaderFound = grid.invaders.find((currInvader) => {
+              return currInvader == invader;
             });
-            
+            //check for projectile
+            const proFound = projectiles.find((currPro) => {
+              return currPro == projectile;
+            });
+
             if (invaderFound && proFound) {
-                createParticles(invader, `#CBC3E3`, true);
+              createParticles(invader, `#CBC3E3`, true);
               grid.invaders.splice(index, 1);
               projectiles.splice(proIndex, 1);
 
               //reduce grid length when a whole invader row at any edge is taken out
-              if (grid.invaders.length > 0) { 
+              if (grid.invaders.length > 0) {
                 const firstInvader = grid.invaders[0];
                 const lastInvader = grid.invaders[grid.invaders.length - 1];
                 grid.width =
@@ -417,6 +424,7 @@ animate = () => {
 animate();
 
 addEventListener("keydown", (event) => {
+  if (game.over) return;
   switch (event.key) {
     case "a":
       keys.a.pressed = true;
@@ -430,6 +438,7 @@ addEventListener("keydown", (event) => {
 });
 
 addEventListener("keyup", (event) => {
+  if (game.over) return;
   switch (event.key) {
     case "a":
       keys.a.pressed = false;
@@ -451,5 +460,19 @@ addEventListener("keyup", (event) => {
         )
       );
       break;
+  }
+});
+
+document.addEventListener("touchstart", (e) => {
+  const touchX = e.touches[0].clientX;
+
+  if (touchX < canvas.width / 2) {
+    // Move left
+    player.position.x = -5;
+    player.rotation = -0.15;
+  } else {
+    // Move right
+    player.velocity.x = 5;
+    player.rotation = 0.15;
   }
 });
