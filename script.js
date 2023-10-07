@@ -432,8 +432,7 @@ addEventListener("keydown", (event) => {
     case "d":
       keys.d.pressed = true;
       break;
-    case " ":
-      break;
+
   }
 });
 
@@ -466,6 +465,18 @@ addEventListener("keyup", (event) => {
 document.addEventListener("touchstart", (e) => {
   const touchX = e.touches[0].clientX;
 
+        projectiles.push(
+          new Projectile(
+            {
+              x: player.position.x + player.width / 2,
+              y: player.position.y,
+            },
+            {
+              x: 0,
+              y: -10,
+            }
+          )
+        );
   if (touchX < canvas.width / 2) {
     // Move left
     player.position.x = -5;
