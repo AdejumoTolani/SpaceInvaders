@@ -1,5 +1,7 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
+const leftBtn = document.querySelector('.leftBtn')
+const rightBtn = document.querySelector(".rightBtn");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
@@ -462,6 +464,17 @@ addEventListener("keyup", (event) => {
   }
 });
 
+leftBtn.addEventListener('click', ()=> {
+    if (player.position.x >= 0) player.position.x = player.position.x - 15;
+    // player.rotation = 0.15;
+// 
+})
+
+rightBtn.addEventListener("click", () => {
+    if (player.position.x <= canvas.width - player.width)
+      player.position.x = player.position.x + 15;
+//   player.rotation = -0.15;
+});
 // document.addEventListener("touchstart", (e) => {
 //   const touchX = e.touches[0].clientX;
 
