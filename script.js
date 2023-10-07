@@ -476,7 +476,7 @@ document.addEventListener("touchstart", (e) => {
               y: -10,
             }
           )
-        );
+        ); 
   if (touchX < canvas.width / 2) {
     // Move left
     player.position.x = -5;
