@@ -10,7 +10,7 @@ class Player {
     };
     this.rotation = 0;
     const image = new Image();
-    image.src = "./pngwing.com (4).png";
+    image.src = "./img/pngwing.com (4).png";
 
     image.onload = () => {
       const scale = 0.15;
@@ -101,7 +101,7 @@ class Invader {
       y: 0,
     };
     const image = new Image();
-    image.src = "./pngwing.com (5).png";
+    image.src = "./img/pngwing.com (5).png";
 
     image.onload = () => {
       const scale = 0.05;
@@ -242,7 +242,7 @@ for (i = 0; i < 100; i++) {
       },
       {
         x: 0,
-        y: 1,
+        y: 0.4,
       },
       Math.random() * 2,
       'white'
