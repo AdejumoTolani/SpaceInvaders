@@ -462,28 +462,28 @@ addEventListener("keyup", (event) => {
   }
 });
 
-document.addEventListener("touchstart", (e) => {
-  const touchX = e.touches[0].clientX;
+// document.addEventListener("touchstart", (e) => {
+//   const touchX = e.touches[0].clientX;
 
-        projectiles.push(
-          new Projectile(
-            {
-              x: player.position.x + player.width / 2,
-              y: player.position.y,
-            },
-            {
-              x: 0,
-              y: -10,
-            }
-          )
-        ); 
-  if (touchX < canvas.width / 2) {
-    // Move left
-    player.position.x = -5;
-    player.rotation = -0.15;
-  } else {
-    // Move right
-    player.velocity.x = 5;
-    player.rotation = 0.15;
-  }
-});
+//         projectiles.push(
+//           new Projectile(
+//             {
+//               x: player.position.x + player.width / 2,
+//               y: player.position.y,
+//             },
+//             {
+//               x: 0,
+//               y: -10,
+//             }
+//           )
+//         ); 
+//   if (touchX < canvas.width / 2) {
+//     // Move left
+//     player.position.x = -5;
+//     player.rotation = -0.15;
+//   } else {
+//     // Move right
+//     player.velocity.x = 5;
+//     player.rotation = 0.15;
+//   }
+// });
